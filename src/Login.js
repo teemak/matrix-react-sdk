@@ -18,7 +18,7 @@ limitations under the License.
 
 import Matrix from "matrix-js-sdk";
 
-import url from 'url';
+import url from "url";
 
 export default class Login {
     constructor(hsUrl, isUrl, fallbackHsUrl, opts) {
@@ -54,7 +54,7 @@ export default class Login {
     _createTemporaryClient() {
         return Matrix.createClient({
             baseUrl: this._hsUrl,
-            idBaseUrl: this._isUrl,
+            idBaseUrl: this._isUrl
         });
     }
 
@@ -83,22 +83,27 @@ export default class Login {
 
     loginAsGuest() {
         const client = this._createTemporaryClient();
-        return client.registerGuest({
-            body: {
-                initial_device_display_name: this._defaultDeviceDisplayName,
-            },
-        }).then((creds) => {
-            return {
-                userId: creds.user_id,
-                deviceId: creds.device_id,
-                accessToken: creds.access_token,
-                homeserverUrl: this._hsUrl,
-                identityServerUrl: this._isUrl,
-                guest: true,
-            };
-        }, (error) => {
-            throw error;
-        });
+        return client
+            .registerGuest({
+                body: {
+                    initial_device_display_name: this._defaultDeviceDisplayName
+                }
+            })
+            .then(
+                creds => {
+                    return {
+                        userId: creds.user_id,
+                        deviceId: creds.device_id,
+                        accessToken: creds.access_token,
+                        homeserverUrl: this._hsUrl,
+                        identityServerUrl: this._isUrl,
+                        guest: true
+                    };
+                },
+                error => {
+                    throw error;
+                }
+            );
     }
 
     loginViaPassword(username, phoneCountry, phoneNumber, pass) {
@@ -110,42 +115,45 @@ export default class Login {
         let legacyParams; // parameters added to support old HSes
         if (phoneCountry && phoneNumber) {
             identifier = {
-                type: 'm.id.phone',
+                type: "m.id.phone",
                 country: phoneCountry,
-                number: phoneNumber,
+                number: phoneNumber
             };
             // No legacy support for phone number login
         } else if (isEmail) {
             identifier = {
-                type: 'm.id.thirdparty',
-                medium: 'email',
-                address: username,
+                type: "m.id.thirdparty",
+                medium: "email",
+                address: username
             };
             legacyParams = {
-                medium: 'email',
-                address: username,
+                medium: "email",
+                address: username
             };
         } else {
             identifier = {
-                type: 'm.id.user',
-                user: username,
+                type: "m.id.user",
+                user: username
             };
             legacyParams = {
-                user: username,
+                user: username
             };
         }
 
         const loginParams = {
             password: pass,
             identifier: identifier,
-            initial_device_display_name: this._defaultDeviceDisplayName,
+            initial_device_display_name: this._defaultDeviceDisplayName
         };
         Object.assign(loginParams, legacyParams);
 
-        const tryFallbackHs = (originalError) => {
+        const tryFallbackHs = originalError => {
             return sendLoginRequest(
-                self._fallbackHsUrl, this._isUrl, 'm.login.password', loginParams,
-            ).catch((fallbackError) => {
+                self._fallbackHsUrl,
+                this._isUrl,
+                "m.login.password",
+                loginParams
+            ).catch(fallbackError => {
                 console.log("fallback HS login failed", fallbackError);
                 // throw the original error
                 throw originalError;
@@ -154,37 +162,41 @@ export default class Login {
 
         let originalLoginError = null;
         return sendLoginRequest(
-            self._hsUrl, self._isUrl, 'm.login.password', loginParams,
-        ).catch((error) => {
-            originalLoginError = error;
-            if (error.httpStatus === 403) {
-                if (self._fallbackHsUrl) {
-                    return tryFallbackHs(originalLoginError);
+            self._hsUrl,
+            self._isUrl,
+            "m.login.password",
+            loginParams
+        )
+            .catch(error => {
+                originalLoginError = error;
+                if (error.httpStatus === 403) {
+                    if (self._fallbackHsUrl) {
+                        return tryFallbackHs(originalLoginError);
+                    }
                 }
-            }
-            throw originalLoginError;
-        }).catch((error) => {
-            console.log("Login failed", error);
-            throw error;
-        });
+                throw originalLoginError;
+            })
+            .catch(error => {
+                console.log("Login failed", error);
+                throw error;
+            });
     }
 
     getSsoLoginUrl(loginType) {
-      const client = this._createTemporaryClient();
-      const parsedUrl = url.parse(window.location.href, true);
+        const client = this._createTemporaryClient();
+        const parsedUrl = url.parse(window.location.href, true);
 
-      // XXX: at this point, the fragment will always be #/login, which is no
-      // use to anyone. Ideally, we would get the intended fragment from
-      // MatrixChat.screenAfterLogin so that you could follow #/room links etc
-      // through an SSO login.
-      parsedUrl.hash = "";
+        // XXX: at this point, the fragment will always be #/login, which is no
+        // use to anyone. Ideally, we would get the intended fragment from
+        // MatrixChat.screenAfterLogin so that you could follow #/room links etc
+        // through an SSO login.
+        parsedUrl.hash = "";
 
-      parsedUrl.query["homeserver"] = client.getHomeserverUrl();
-      parsedUrl.query["identityServer"] = client.getIdentityServerUrl();
-      return client.getSsoLoginUrl(url.format(parsedUrl), loginType);
+        parsedUrl.query["homeserver"] = client.getHomeserverUrl();
+        parsedUrl.query["identityServer"] = client.getIdentityServerUrl();
+        return client.getSsoLoginUrl(url.format(parsedUrl), loginType);
     }
 }
-
 
 /**
  * Send a login request to the given server, and format the response
@@ -200,29 +212,40 @@ export default class Login {
 export async function sendLoginRequest(hsUrl, isUrl, loginType, loginParams) {
     const client = Matrix.createClient({
         baseUrl: hsUrl,
-        idBaseUrl: isUrl,
+        idBaseUrl: isUrl
     });
 
     const data = await client.login(loginType, loginParams);
 
     const wellknown = data.well_known;
     if (wellknown) {
-        if (wellknown["m.homeserver"] && wellknown["m.homeserver"]["base_url"]) {
+        if (
+            wellknown["m.homeserver"] &&
+            wellknown["m.homeserver"]["base_url"]
+        ) {
             hsUrl = wellknown["m.homeserver"]["base_url"];
-            console.log(`Overrode homeserver setting with ${hsUrl} from login response`);
+            console.log(
+                `Overrode homeserver setting with ${hsUrl} from login response`
+            );
         }
-        if (wellknown["m.identity_server"] && wellknown["m.identity_server"]["base_url"]) {
+        if (
+            wellknown["m.identity_server"] &&
+            wellknown["m.identity_server"]["base_url"]
+        ) {
             // TODO: should we prompt here?
             isUrl = wellknown["m.identity_server"]["base_url"];
-            console.log(`Overrode IS setting with ${isUrl} from login response`);
+            console.log(
+                `Overrode IS setting with ${isUrl} from login response`
+            );
         }
     }
 
     return {
+        // homeserverUrl: "vinix.im",
         homeserverUrl: hsUrl,
         identityServerUrl: isUrl,
         userId: data.user_id,
         deviceId: data.device_id,
-        accessToken: data.access_token,
+        accessToken: data.access_token
     };
 }

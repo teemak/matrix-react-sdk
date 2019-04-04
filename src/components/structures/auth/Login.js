@@ -624,7 +624,6 @@ module.exports = React.createClass({
         const AuthHeader = sdk.getComponent("auth.AuthHeader");
         const AuthBody = sdk.getComponent("auth.AuthBody");
         const loader = this.state.busy ? <div className="mx_Login_loader"><Loader /></div> : null;
-
         const errorText = this.props.defaultServerDiscoveryError || this.state.discoveryError || this.state.errorText;
 
         let loginAsGuestJsx;
@@ -655,10 +654,6 @@ module.exports = React.createClass({
                     { errorTextSection }
                     { this.renderServerComponent() }
                     { this.renderLoginComponentForStep() }
-                    <a className="mx_AuthBody_changeFlow" onClick={this.onRegisterClick} href="#">
-                        { _t('Create account') }
-                    </a>
-                    { loginAsGuestJsx }
                 </AuthBody>
             </AuthPage>
         );

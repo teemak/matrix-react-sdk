@@ -27,6 +27,7 @@ import { _t, _td } from '../../../languageHandler';
 import SdkConfig from '../../../SdkConfig';
 import { messageForResourceLimitError } from '../../../utils/ErrorUtils';
 import * as ServerType from '../../views/auth/ServerTypeSelector';
+//THIS IS FOR CREATING THE ACCOUNT
 
 const MIN_PASSWORD_LENGTH = 6;
 

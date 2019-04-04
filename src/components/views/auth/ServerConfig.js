@@ -57,6 +57,7 @@ export default class ServerConfig extends React.PureComponent {
         super(props);
 
         this.state = {
+            //hsUrl: 'vinix.im',
             hsUrl: props.customHsUrl,
             isUrl: props.customIsUrl,
         };

@@ -1270,7 +1270,7 @@
     "Phone": "Phone",
     "Not sure of your password? <a>Set a new one</a>": "Not sure of your password? <a>Set a new one</a>",
     "Sign in to your Matrix account": "Sign in to your Matrix account",
-    "Sign in to your Matrix account on %(serverName)s": "Sign in to your Matrix account on %(serverName)s",
+    "Sign in to your Matrix account on %(serverName)s": "Sign in to your Vinix Blast account on %(serverName)s",
     "Change": "Change",
     "Sign in with": "Sign in with",
     "If you don't specify an email address, you won't be able to reset your password. Are you sure?": "If you don't specify an email address, you won't be able to reset your password. Are you sure?",
