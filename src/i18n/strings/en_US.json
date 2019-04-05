@@ -322,6 +322,7 @@
     "Submit": "Submit",
     "Success": "Success",
     "Tagged as: ": "Tagged as: ",
+    "Text Messages: ": "Text Messages",
     "The default role for new room members is": "The default role for new room members is",
     "The main address for this room is": "The main address for this room is",
     "The signing key you provided matches the signing key you received from %(userId)s's device %(deviceId)s. Device marked as verified.": "The signing key you provided matches the signing key you received from %(userId)s's device %(deviceId)s. Device marked as verified.",
