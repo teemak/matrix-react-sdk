@@ -875,16 +875,30 @@ module.exports = React.createClass({
                 }
             },
             {
+                list: this.state.lists["im.vector.fake.direct"],
+                label: "TEST",
+                tagName: "im.vector.fake.direct",
+                headerItems: this._getHeaderItems("im.vector.fake.direct"),
+                order: "recent",
+                incomingCall: incomingCallIfTaggedAs("im.vector.fake.direct"),
+                onAddRoom: () => {
+                    dis.dispatch({ action: "view_create_chat" });
+                }
+            },
+            /*
+            {
                 list: this.state.lists["im.vector.fake.text"],
-                label: "Text Messages",
+                label: "im.vector.fake.text",
                 tagName: "im.vector.fake.text",
                 headerItems: this._getHeaderItems("im.vector.fake.text"),
                 order: "recent",
+                //incomingCall: incomingCallIfTaggedAs("Text Messages"),
                 incomingCall: incomingCallIfTaggedAs("im.vector.fake.text"),
                 onAddRoom: () => {
                     dis.dispatch({ action: "view_create_text" });
                 }
             },
+			*/
             {
                 list: this.state.lists["im.vector.fake.recent"],
                 label: _t("Rooms"),
